@@ -45,7 +45,8 @@ sem instrução explícita do utilizador.
    temporária dentro da pasta dos CSV e não substitui os resultados anteriores perante
    um erro de leitura ou validação. A publicação final de vários ficheiros não
    constitui uma transação atómica face a falhas do sistema/disco.
-9. Verificar as contagens dos CSV contra a auditoria, executar os testes e
+9. Verificar estrutura/contagens contra a auditoria e comparar integralmente os
+   valores dos CSV com os Excel através de `verificar_originais.py`. Executar os testes e
    registar as alterações técnicas num commit local com caminhos explícitos.
 
 ## Correspondência de folhas
@@ -83,6 +84,10 @@ ou valores em colunas sem cabeçalho interrompem a execução para evitar perdas
 
 ## Auditoria e limitações
 
+A garantia de correspondência com os Excel, as regras de comparação e os
+limites da evidência estão descritos em [integridade.md](integridade.md).
+Conferir contagens contra a auditoria, por si só, não prova igualdade dos valores.
+
 `auditoria.json` regista, para cada fonte, linhas lidas/vazias, IDs vazios e
 repetidos, duplicados exatos, tipos e nulos por coluna, colunas ausentes,
 datas inválidas, anos divergentes e células de fórmula/erro.
@@ -109,6 +114,7 @@ sem instalar pacotes pela rede nem alterar o ambiente virtual do projeto.
 ```powershell
 python limpeza_tratamento/join.py
 python limpeza_tratamento/verificar_resultados.py
+python limpeza_tratamento/verificar_originais.py
 python -m unittest discover -s tests -v
 git diff --check
 git status --short --branch

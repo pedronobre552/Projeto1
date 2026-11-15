@@ -4,9 +4,11 @@ from pathlib import Path
 import tempfile
 import unittest
 import re
+import json
 
 from limpeza_tratamento.gerar_dicionarios import generate
 from limpeza_tratamento.verificar_resultados import verify
+from limpeza_tratamento.verificar_originais import validate
 
 from openpyxl import Workbook
 from openpyxl.worksheet.formula import ArrayFormula
@@ -109,6 +111,7 @@ class JoinTests(unittest.TestCase):
                 row = next(csv.DictReader(handle))
             self.assertEqual(row["Num. Mortos a 30 dias"], "=- descricao sintetica")
             self.assertEqual(row["Datahora"], "#NAME?")
+            self.assertEqual(validate(root, root / "out", root / "check")["estado"], "OK")
 
     def test_separate_folders_and_dictionary_cover_every_column(self):
         # Reproduzir a organização real sem recorrer aos ficheiros do utilizador.
@@ -127,6 +130,67 @@ class JoinTests(unittest.TestCase):
                 text = (root / "dict" / f"{table}.md").read_text(encoding="utf-8")
                 documented = re.findall(r"^\| `([^`]+)` \|", text, flags=re.MULTILINE)
                 self.assertEqual(documented, info["colunas"])
+            direct = validate(root, csv_dir, report_dir)
+            self.assertEqual(direct["estado"], "OK")
+            self.assertEqual(direct["linhas_comparadas"], 6)
+            self.assertTrue(direct["ficheiros_estaveis_durante_verificacao"])
+
+    def test_direct_comparison_detects_value_change_despite_same_counts(self):
+        # As contagens e a proveniência mantêm-se; só muda uma medida.
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_source(root, 2010)
+            self.make_source(root, 2023, modern=True)
+            csv_dir, report_dir = root / "csv", root / "reports"
+            join.run(root, csv_dir, report_dir=report_dir)
+            path = csv_dir / "acidentes.csv"
+            with path.open(encoding="utf-8-sig", newline="") as handle:
+                reader = csv.DictReader(handle)
+                fields, rows = reader.fieldnames, list(reader)
+            rows[0]["Num. Mortos a 30 dias"] = "99"
+            with path.open("w", encoding="utf-8-sig", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(rows)
+            verify(csv_dir, report_dir)  # A verificação estrutural isolada não deteta isto.
+            with self.assertRaisesRegex(ValueError, "comparação falhou"):
+                validate(root, csv_dir, report_dir)
+            result = json.loads((report_dir / "comparacao_originais.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["divergencias"], 1)
+            self.assertEqual(result["primeiras_divergencias"][0]["coluna"], "Num. Mortos a 30 dias")
+
+    def test_direct_comparison_detects_missing_extra_and_filled_absent_field(self):
+        for mutation in ("missing", "extra", "absent_column"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                self.make_source(root, 2010)
+                self.make_source(root, 2023, modern=True)
+                # Uma coluna nova em 2023 tem de ficar vazia nas linhas de 2010.
+                path = root / "acidentes-2023.xlsx"
+                workbook = join.openpyxl.load_workbook(path)
+                workbook.worksheets[0]["E2"] = "Ano"
+                workbook.worksheets[0]["E3"] = 2023
+                workbook.save(path)
+                workbook.close()
+                csv_dir, report_dir = root / "csv", root / "reports"
+                join.run(root, csv_dir, report_dir=report_dir)
+                path = csv_dir / "acidentes.csv"
+                with path.open(encoding="utf-8-sig", newline="") as handle:
+                    reader = csv.DictReader(handle)
+                    fields, rows = reader.fieldnames, list(reader)
+                if mutation == "missing":
+                    rows.pop()
+                elif mutation == "extra":
+                    rows.append(rows[-1].copy())
+                else:
+                    self.assertEqual(rows[0]["Ano"], "")
+                    rows[0]["Ano"] = "0"
+                with path.open("w", encoding="utf-8-sig", newline="") as handle:
+                    writer = csv.DictWriter(handle, fieldnames=fields)
+                    writer.writeheader()
+                    writer.writerows(rows)
+                with self.assertRaisesRegex(ValueError, "comparação falhou"):
+                    validate(root, csv_dir, report_dir)
 
 
 if __name__ == "__main__":

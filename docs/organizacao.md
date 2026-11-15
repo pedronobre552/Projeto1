@@ -14,6 +14,7 @@ Projeto1/
   limpeza_tratamento/
     join.py                     união e auditoria das fontes
     verificar_resultados.py     validação dos CSV gravados
+    verificar_originais.py      comparação integral com os Excel e hashes
     gerar_dicionarios.py        documentação das colunas
   outputs/fase1/                auditoria JSON e resumo Markdown
   tests/                        testes sintéticos
@@ -51,6 +52,10 @@ O verificador confere novamente os CSV na nova pasta contra a auditoria:
 cabeçalhos, contagens, ano e proveniência. Os testes verificam a separação das
 pastas e as regras existentes. O gerador documenta cada coluna na ordem do
 cabeçalho e falha perante campos desconhecidos.
+
+O comparador `verificar_originais.py` relê as fontes e confere todos os valores,
+incluindo campos vazios, sem depender da auditoria. O procedimento, as
+transformações aceites e os limites estão em [integridade.md](integridade.md).
 
 `data/`, `data_agregada/`, `outputs/`, PDF e `docs/referencias/` estão excluídos
 do Git. Os dicionários contêm definições e esquema, sem registos individuais.

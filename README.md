@@ -22,6 +22,7 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 
 - [Dicionários dos quatro CSV](docs/dicionarios/README.md)
 - [Procedimento da união dos anos](docs/fase1.md)
+- [Como se verifica a correspondência com os originais](docs/integridade.md)
 - [Organização e registo da limpeza](docs/organizacao.md)
 
 ## Como repetir
@@ -31,6 +32,7 @@ Usar Python com as dependências de `requirements.txt` instaladas:
 ```powershell
 python limpeza_tratamento/join.py
 python limpeza_tratamento/verificar_resultados.py
+python limpeza_tratamento/verificar_originais.py
 python limpeza_tratamento/gerar_dicionarios.py
 python -m unittest discover -s tests -v
 ```
@@ -38,6 +40,8 @@ python -m unittest discover -s tests -v
 `join.py` lê `data/acidentes-AAAA.xlsx`, escreve os CSV em `data_agregada/`
 e a auditoria em `outputs/fase1/`. Não altera os Excel originais.
 `verificar_resultados.py` confere os CSV e grava o resumo da auditoria.
+`verificar_originais.py` compara todos os valores com os Excel, sem amostragem,
+e regista hashes SHA-256 e evidência em `outputs/fase1/comparacao_originais.*`.
 `gerar_dicionarios.py` documenta os cabeçalhos e os anos de disponibilidade.
 Usar `--help` para configurar caminhos. `join.py --audit-only` atualiza apenas
 a auditoria, não os CSV; não substitui uma regeneração completa.
