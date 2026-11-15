@@ -85,13 +85,15 @@ def year_from_date(value):
     return None
 
 
-def run(input_dir, output_dir, audit_only=False):
+def run(input_dir, output_dir, audit_only=False, report_dir=None):
     """Descobrir esquemas, auditar todas as linhas e publicar os CSV completos.
 
     Uma primeira passagem lê só os cabeçalhos para construir a união das colunas.
     A segunda lê em streaming para não carregar os ficheiros completos em RAM.
     Não existem operações de rede nem comandos Git nesta função.
     """
+    # Separar os CSV finais dos relatórios; chamadas antigas podem usar uma só pasta.
+    report_dir = report_dir or output_dir
     files = sorted(input_dir.glob("acidentes-*.xlsx"))
     if not files:
         raise ValueError(f"Sem ficheiros acidentes-AAAA.xlsx em {input_dir}")
@@ -126,6 +128,7 @@ def run(input_dir, output_dir, audit_only=False):
             workbook.close()
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    report_dir.mkdir(parents=True, exist_ok=True)
     report = {
         "anos": years,
         "anos_em_falta": sorted(set(range(min(years), max(years) + 1)) - set(years)),
@@ -236,7 +239,8 @@ def run(input_dir, output_dir, audit_only=False):
         report["csv_gerados"] = not audit_only
         (Path(temp) / "auditoria.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         for path in Path(temp).iterdir():
-            path.replace(output_dir / path.name)
+            destination = report_dir if path.name == "auditoria.json" else output_dir
+            path.replace(destination / path.name)
     print(json.dumps({"tabelas": dict(totals), "anos_em_falta": report["anos_em_falta"], "csv_gerados": not audit_only}, ensure_ascii=False), flush=True)
     return report
 
@@ -245,12 +249,13 @@ def main():
     """Permitir execução a partir de qualquer pasta, com caminhos configuráveis."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-dir", type=Path, default=ROOT / "data")
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "fase1")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "data_agregada")
+    parser.add_argument("--report-dir", type=Path, default=ROOT / "outputs" / "fase1")
     parser.add_argument("--audit-only", action="store_true", help="Gerar apenas o relatório de auditoria")
     args = parser.parse_args()
-    if args.input_dir.resolve() == args.output_dir.resolve():
-        parser.error("A pasta de saída deve ser diferente da pasta de origem")
-    run(args.input_dir, args.output_dir, args.audit_only)
+    if args.input_dir.resolve() in {args.output_dir.resolve(), args.report_dir.resolve()}:
+        parser.error("As pastas de saída devem ser diferentes da pasta de origem")
+    run(args.input_dir, args.output_dir, args.audit_only, args.report_dir)
 
 
 if __name__ == "__main__":

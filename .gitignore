@@ -1,5 +1,8 @@
 dados/
 data/
+data_agregada/
+data_agragada/
+docs/referencias/
 outputs/
 .venv/
 __pycache__/
@@ -16,5 +19,5 @@ __pycache__/
 *.feather
 *.pkl
 
-# Relatorio de referencia fornecido pelo utilizador (apenas local).
-/Parte 1 PACD.pdf
+# PDF de referencia fornecidos pelo utilizador (apenas locais).
+*.pdf

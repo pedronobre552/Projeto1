@@ -9,9 +9,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def verify(folder):
+def verify(folder, report_dir=None):
     """Verificar esquema, ano, proveniência e contagens sem alterar os CSV."""
-    report = json.loads((folder / "auditoria.json").read_text(encoding="utf-8"))
+    report_dir = report_dir or folder
+    report = json.loads((report_dir / "auditoria.json").read_text(encoding="utf-8"))
     if not report["csv_gerados"]:
         raise ValueError("A auditoria não corresponde a uma geração de CSV")
     sources = {(s["ficheiro"], s["folha"]): s for s in report["fontes"]}
@@ -71,12 +72,14 @@ def verify(folder):
               "## Limitações e próximos passos", "",
               "Datas, categorias e coordenadas mantêm os valores originais. Colunas ausentes por ano ficam vazias. Fórmulas/erros são texto e estão localizados em auditoria.json. A equivalência semântica das categorias e formatos exige tratamento posterior.", "",
               "Antes da seleção de variáveis, definir o objetivo futuro. Não houve seleção por Braga nem extração dos indicadores do relatório da Parte I.", ""]
-    (folder / "resumo_auditoria.md").write_text("\n".join(lines), encoding="utf-8")
+    (report_dir / "resumo_auditoria.md").write_text("\n".join(lines), encoding="utf-8")
     print(json.dumps({"validacao": "OK", "linhas_por_tabela": verified}, ensure_ascii=False))
     return verified
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--folder", type=Path, default=ROOT / "outputs" / "fase1")
-    verify(parser.parse_args().folder)
+    parser.add_argument("--folder", type=Path, default=ROOT / "data_agregada")
+    parser.add_argument("--report-dir", type=Path, default=ROOT / "outputs" / "fase1")
+    args = parser.parse_args()
+    verify(args.folder, args.report_dir)

@@ -16,8 +16,9 @@ mas o seu recorte de Braga e a análise de 2019/2023 não limitam esta preparaç
 | Local | Conteúdo | Git |
 | --- | --- | --- |
 | `data/acidentes-AAAA.xlsx` | Fontes anuais, preservadas | Excluído |
-| `outputs/fase1/` | CSV e resultados da auditoria | Excluído |
-| `Parte 1 PACD.pdf` | Referência da equipa | Excluído |
+| `data_agregada/` | CSV finais por entidade | Excluído |
+| `outputs/fase1/` | Resultados da auditoria | Excluído |
+| `docs/referencias/` | Documentos oficiais e referência da equipa | Excluído |
 | `limpeza_tratamento/` | Scripts reproduzíveis e comentados | Versionado |
 | `tests/` | Testes com dados sintéticos | Versionado |
 | `docs/` | Procedimento e decisões técnicas | Versionado |
@@ -41,7 +42,7 @@ sem instrução explícita do utilizador.
    vazias. Preservar duplicados, IDs sem correspondência e valores problemáticos.
 7. Acrescentar `ano`, `ficheiro_origem`, `folha_origem` e `linha_origem`.
 8. Concluir a leitura antes de publicar os ficheiros. A execução usa uma pasta
-   temporária dentro da saída e não substitui os resultados anteriores perante
+   temporária dentro da pasta dos CSV e não substitui os resultados anteriores perante
    um erro de leitura ou validação. A publicação final de vários ficheiros não
    constitui uma transação atómica face a falhas do sistema/disco.
 9. Verificar as contagens dos CSV contra a auditoria, executar os testes e
@@ -114,7 +115,8 @@ git status --short --branch
 git check-ignore data/acidentes-2024.xlsx outputs/fase1/auditoria.json
 ```
 
-Para outras pastas, usar `--input-dir` e `--output-dir`. Para repetir apenas a
+Os CSV ficam em `data_agregada/`; a auditoria e o resumo ficam em `outputs/fase1/`.
+Para outras pastas, usar `--input-dir`, `--output-dir` e `--report-dir`. Para repetir apenas a
 auditoria, usar `--audit-only`: lê todas as fontes e grava o relatório sem gerar
 novos CSV. CSV anteriores, se existirem, não são atualizados por esse modo.
 
@@ -124,8 +126,8 @@ alfanuméricos, a deteção de relações órfãs e a normalização dos contado
 Também verificam a preservação de fórmulas como texto e a interrupção perante
 valores sem cabeçalho sem substituir um resultado anterior.
 
-Os resultados específicos da execução ficam em `auditoria.json` e no resumo
-local `resumo_auditoria.md`. O script `verificar_resultados.py` lê os CSV já
+Os resultados específicos da execução ficam em `outputs/fase1/auditoria.json` e no resumo
+local `outputs/fase1/resumo_auditoria.md`. O script `verificar_resultados.py` lê os CSV já
 gravados para conferir o esquema, o ano, as contagens totais e por fonte e a
 unicidade/ordem da linha de origem. Não altera os dados nem extrai variáveis.
 Antes de cada commit, rever `git diff --cached --stat` e usar `git add` apenas

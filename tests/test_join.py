@@ -3,6 +3,10 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+import re
+
+from limpeza_tratamento.gerar_dicionarios import generate
+from limpeza_tratamento.verificar_resultados import verify
 
 from openpyxl import Workbook
 from openpyxl.worksheet.formula import ArrayFormula
@@ -105,6 +109,24 @@ class JoinTests(unittest.TestCase):
                 row = next(csv.DictReader(handle))
             self.assertEqual(row["Num. Mortos a 30 dias"], "=- descricao sintetica")
             self.assertEqual(row["Datahora"], "#NAME?")
+
+    def test_separate_folders_and_dictionary_cover_every_column(self):
+        # Reproduzir a organização real sem recorrer aos ficheiros do utilizador.
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.make_source(root, 2023, modern=True)
+            csv_dir, report_dir = root / "csv", root / "reports"
+            report = join.run(root, csv_dir, report_dir=report_dir)
+            self.assertFalse((csv_dir / "auditoria.json").exists())
+            self.assertTrue((report_dir / "auditoria.json").exists())
+            verified = verify(csv_dir, report_dir)
+            self.assertEqual(verified["acidentes"], 1)
+            self.assertTrue((report_dir / "resumo_auditoria.md").exists())
+            generate(csv_dir, report_dir / "auditoria.json", root / "dict")
+            for table, info in report["tabelas"].items():
+                text = (root / "dict" / f"{table}.md").read_text(encoding="utf-8")
+                documented = re.findall(r"^\| `([^`]+)` \|", text, flags=re.MULTILINE)
+                self.assertEqual(documented, info["colunas"])
 
 
 if __name__ == "__main__":
