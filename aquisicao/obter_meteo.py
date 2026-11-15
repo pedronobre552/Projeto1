@@ -74,12 +74,18 @@ def adquirir(ultimo_ano=2024):
                 if espera:
                     time.sleep(espera)
                 ultimo_pedido = time.monotonic()
-                try:
-                    with urlopen(Request(url, headers={"User-Agent": "PACD-Braga/1.0"}), timeout=180) as api:
-                        dados = api.read()
-                except HTTPError as erro:
-                    print(erro.read().decode("utf-8"), "Retry-After:", erro.headers.get("Retry-After"), flush=True)
-                    raise
+                while True:
+                    try:
+                        with urlopen(Request(url, headers={"User-Agent": "PACD-Braga/1.0"}), timeout=180) as api:
+                            dados = api.read()
+                        break
+                    except HTTPError as erro:
+                        if erro.code != 429:
+                            raise
+                        # Uma única execução pode aguardar a quota sem perder os anos obtidos.
+                        espera_api = max(60, int(erro.headers.get("Retry-After", "60"))) + 2
+                        print(f"Quota da API: a aguardar {espera_api}s antes de retomar.", flush=True)
+                        time.sleep(espera_api)
                 json.loads(dados)
                 resposta.write_bytes(dados)
             dados = json.loads(resposta.read_bytes())

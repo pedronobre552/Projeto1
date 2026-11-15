@@ -92,6 +92,9 @@ python aquisicao/obter_meteo.py --ate 2020
 ```
 
 O script reutiliza respostas já guardadas e espaça os pedidos à API.
+Se a API atingir a quota, aguarda o prazo indicado em `Retry-After` e retoma
+na mesma execução. Com `python executar.py`, a aquisição meteorológica ocorre
+automaticamente depois da união, verificações e atualização dos dicionários.
 As respostas originais ficam em `outputs/meteo/respostas/` e os URLs
 das consultas em `outputs/meteo/origem.json`. Os CSV e estas respostas ficam
 apenas locais, excluídos do Git. Os dados Open-Meteo requerem atribuição à fonte

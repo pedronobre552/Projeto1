@@ -30,13 +30,28 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 
 ## Como repetir
 
-Usar Python com as dependências de `requirements.txt` instaladas:
+Na primeira utilização, instalar as dependências:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Depois basta um comando para unir, verificar, documentar e obter a meteorologia:
+
+```powershell
+python executar.py
+```
+
+O processo segue a ordem abaixo e para se alguma etapa falhar. Usa o mesmo
+Python em todas as etapas. A meteorologia já descarregada é reutilizada.
+Para executar uma etapa isoladamente:
 
 ```powershell
 python limpeza_tratamento/join.py
 python limpeza_tratamento/verificar_resultados.py
 python limpeza_tratamento/verificar_originais.py
 python limpeza_tratamento/gerar_dicionarios.py
+python aquisicao/obter_meteo.py
 python -m unittest discover -s tests -v
 ```
 
