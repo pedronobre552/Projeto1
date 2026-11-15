@@ -10,6 +10,8 @@ sem instrução do utilizador.
 | --- | --- |
 | `data/` | Excel anuais originais, preservados |
 | `data_agregada/` | Quatro CSV finais, com todos os anos e `ano` |
+| `meteo/` | Dois CSV: meteorologia horária e horas solares diárias por concelho, 2010–2024 |
+| `aquisicao/` | Script de aquisição no Open-Meteo |
 | `docs/dicionarios/` | Dicionários completos e regras de interpretação |
 | `docs/referencias/` | Formulário BEAV, manual e relatório da Parte I |
 | `outputs/fase1/` | Auditoria detalhada e resumo dos resultados |
@@ -24,6 +26,7 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 - [Procedimento da união dos anos](docs/fase1.md)
 - [Como se verifica a correspondência com os originais](docs/integridade.md)
 - [Organização e registo da limpeza](docs/organizacao.md)
+- [Meteorologia: colunas, coordenadas e origem](docs/meteo.md)
 
 ## Como repetir
 
