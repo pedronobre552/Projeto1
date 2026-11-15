@@ -1,0 +1,17 @@
+dados/
+data/
+outputs/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+
+# Dados de origem e derivados nunca entram no repositorio.
+*.xlsx
+*.xls
+*.csv
+*.parquet
+*.feather
+*.pkl
