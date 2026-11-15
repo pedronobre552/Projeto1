@@ -15,3 +15,6 @@ __pycache__/
 *.parquet
 *.feather
 *.pkl
+
+# Relatorio de referencia fornecido pelo utilizador (apenas local).
+/Parte 1 PACD.pdf

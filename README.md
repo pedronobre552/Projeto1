@@ -10,6 +10,8 @@ Com Python e as dependências de `requirements.txt` instaladas:
 
 ```powershell
 python limpeza_tratamento/join.py
+# Integrar peoes por acidente no distrito do relatorio:
+python limpeza_tratamento/integrar_peoes.py --district Braga
 # Para executar apenas a auditoria:
 python limpeza_tratamento/join.py --audit-only
 ```
@@ -39,6 +41,21 @@ produto cartesiano. Antes de construir uma tabela única por acidente, é precis
 definir agregações e resolver identificadores sem correspondência. Nesta fase,
 esses registos ficam preservados nas tabelas respetivas e assinalados na auditoria.
 O ID de veículo só existe nos anos recentes, impedindo inferir essa relação nos antigos.
+
+### Alinhamento com o relatório da Parte I
+
+O relatório local da equipa analisa Braga e usa contagens de peões por acidente.
+`integrar_peoes.py` segue essa abordagem para todos os anos disponíveis: seleciona
+os acidentes do distrito e conta os peões por `(ano, Id. Acidente)`, acrescentando
+`peoes_envolvidos` e `acidente_com_peoes`. Mantém uma linha por acidente, inclusive
+os acidentes sem peões (contagem zero), e preserva a variável `ano`.
+Valida a unicidade dos acidentes selecionados e da chave
+`(ano, Id. Acidente, Id. Peao)` dos peões associados. Não escolhe arbitrariamente
+entre duplicados. A saída `acidentes_distrito_com_peoes.csv` e os totais em
+`integracao_peoes.json` ficam em `outputs/fase1/`, fora do Git.
+O distrito pode ser alterado com `--district`. As quatro tabelas nacionais
+continuam disponíveis como base. Indicadores de gravidade, curvas, normalização
+de categorias e análises mensais pertencem às fases seguintes.
 
 Não há ficheiros de 2020, 2021 e 2022 no conjunto inicial. Não são criadas linhas
 para preencher anos em falta. Diferenças de categorias, formatos de datas e
