@@ -1,4 +1,10 @@
-"""Audita e concatena Excel anuais, preservando a granularidade das quatro tabelas."""
+"""Fase 1: auditar e concatenar os Excel anuais em quatro CSV locais.
+
+Conserva todos os anos, distritos, colunas e registos não vazios de cada entidade.
+Acrescenta o ano do ficheiro e a proveniência. Não filtra, agrega nem cruza
+entidades: essas decisões dependem do objetivo da análise futura.
+Ver docs/fase1.md para o procedimento e as regras de validação.
+"""
 
 import argparse
 from collections import Counter, defaultdict
@@ -28,6 +34,11 @@ RESERVED = {"ano", "ficheiro_origem", "folha_origem", "linha_origem"}
 
 
 def canonical_header(value):
+    """Uniformizar apenas variantes conhecidas do mesmo nome de coluna.
+
+    Não remover SUM dos grupos etários: a regra aplica-se só aos contadores
+    de vítimas a 30 dias. Não normalizar categorias nem os valores das células.
+    """
     text = re.sub(r"\s+", " ", str(value).strip())
     text = re.sub(r"Gr\.Etario\s+\(", "Gr.Etario(", text)
     if text.startswith("Num. ") and text.endswith(" a 30 dias SUM"):
@@ -36,6 +47,11 @@ def canonical_header(value):
 
 
 def find_header(sheet):
+    """Encontrar o cabeçalho real, mesmo com margens vazias como em 2023.
+
+    Guardar os índices originais evita deslocar dados quando há colunas vazias.
+    Rejeitar colisões impede que um dicionário elimine silenciosamente colunas.
+    """
     for number, row in enumerate(sheet.iter_rows(max_row=10, values_only=True), 1):
         if KEY in row:
             columns = {i: canonical_header(v) for i, v in enumerate(row) if v is not None}
@@ -47,6 +63,7 @@ def find_header(sheet):
 
 
 def key_text(value):
+    """Representar IDs como texto, preservando códigos e zeros em IDs textuais."""
     # IDs são identificadores: não converter códigos alfanuméricos em números.
     if value is None or value == "":
         return ""
@@ -56,6 +73,7 @@ def key_text(value):
 
 
 def year_from_date(value):
+    """Ler o ano apenas para auditoria, sem modificar a data original."""
     if isinstance(value, (datetime, date)):
         return value.year
     if isinstance(value, str):
@@ -68,9 +86,16 @@ def year_from_date(value):
 
 
 def run(input_dir, output_dir, audit_only=False):
+    """Descobrir esquemas, auditar todas as linhas e publicar os CSV completos.
+
+    Uma primeira passagem lê só os cabeçalhos para construir a união das colunas.
+    A segunda lê em streaming para não carregar os ficheiros completos em RAM.
+    Não existem operações de rede nem comandos Git nesta função.
+    """
     files = sorted(input_dir.glob("acidentes-*.xlsx"))
     if not files:
         raise ValueError(f"Sem ficheiros acidentes-AAAA.xlsx em {input_dir}")
+    # Ordem estável: colunas do primeiro ano, seguidas das novas colunas.
     schemas = defaultdict(list)
     sources = []
     years = []
@@ -110,6 +135,8 @@ def run(input_dir, output_dir, audit_only=False):
         "relacoes": [],
         "tabelas": {},
     }
+    # O ano faz parte da chave: IDs iguais em anos diferentes não são confundidos.
+    # Repetições nas tabelas de pessoas são esperadas e não são eliminadas.
     keys = defaultdict(Counter)
     totals = Counter()
     # Publicar apenas depois de concluir a leitura e a validação de todas as fontes.
@@ -129,8 +156,10 @@ def run(input_dir, output_dir, audit_only=False):
                     "linha_cabecalho": header_row, "linhas": 0, "linhas_vazias": 0,
                     "id_vazio": 0, "duplicados_exatos": 0, "datas_invalidas": 0,
                     "datas_ano_divergente": 0, "ano_original_divergente": 0,
+                    "celulas_formulas_erros": [],
                     "colunas_ausentes": sorted(set(schemas[table]) - set(columns.values())),
                 }
+                # Os perfis registam diferenças sem imputar nem converter valores.
                 nulls, types = Counter(), defaultdict(Counter)
                 seen = set()
                 try:
@@ -140,8 +169,16 @@ def run(input_dir, output_dir, audit_only=False):
                         if all(v is None or v == "" for v in values):
                             stats["linhas_vazias"] += 1
                             continue
-                        if any(cell.data_type in {"f", "e"} for cell in cells):
-                            raise ValueError(f"Fórmula/erro Excel em {path.name}/{title}:{number}")
+                        for i, cell in enumerate(cells):
+                            if cell.data_type in {"f", "e"}:
+                                # Alguns textos foram interpretados como fórmulas no Excel
+                                # original. Preservar a expressão, sem a avaliar nem apagar.
+                                expression = getattr(cell.value, "text", cell.value)
+                                values[i] = expression
+                                stats["celulas_formulas_erros"].append({
+                                    "celula": cell.coordinate, "tipo": cell.data_type,
+                                    "conteudo_original": str(expression),
+                                })
                         if any(v is not None and v != "" and i not in columns for i, v in enumerate(values)):
                             raise ValueError(f"Valor sem cabeçalho em {path.name}/{title}:{number}")
                         record = {name: values[i] if i < len(values) else None for i, name in columns.items()}
@@ -150,6 +187,8 @@ def run(input_dir, output_dir, audit_only=False):
                             stats["id_vazio"] += 1
                         else:
                             keys[(year, table)][identifier] += 1
+                        # Comparar o registo inteiro, antes de adicionar a proveniência.
+                        # Detetar duplicados não autoriza removê-los nesta fase.
                         digest = hashlib.sha256(json.dumps(record, ensure_ascii=False, default=str, sort_keys=True).encode()).digest()
                         stats["duplicados_exatos"] += int(digest in seen)
                         seen.add(digest)
@@ -179,6 +218,8 @@ def run(input_dir, output_dir, audit_only=False):
             for handle in handles.values():
                 handle.close()
 
+        # Medir a compatibilidade para futuros joins sem executar um join 1:N:N.
+        # Linhas órfãs continuam no CSV da entidade e são contabilizadas no relatório.
         for year in years:
             parent = keys[(year, "acidentes")]
             for table in ("condutores_veiculos", "passageiros", "peoes"):
@@ -201,6 +242,7 @@ def run(input_dir, output_dir, audit_only=False):
 
 
 def main():
+    """Permitir execução a partir de qualquer pasta, com caminhos configuráveis."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-dir", type=Path, default=ROOT / "data")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs" / "fase1")

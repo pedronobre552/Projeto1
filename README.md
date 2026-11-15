@@ -1,5 +1,7 @@
 # Projeto de acidentes rodoviários
 
+O procedimento completo, decisões e limitações estão em [docs/fase1.md](docs/fase1.md).
+
 ## Fase 1: auditoria e união dos anos
 
 Os dados ficam exclusivamente no computador. `data/`, `dados/`, `outputs/`,
@@ -10,8 +12,7 @@ Com Python e as dependências de `requirements.txt` instaladas:
 
 ```powershell
 python limpeza_tratamento/join.py
-# Integrar peoes por acidente no distrito do relatorio:
-python limpeza_tratamento/integrar_peoes.py --district Braga
+python limpeza_tratamento/verificar_resultados.py
 # Para executar apenas a auditoria:
 python limpeza_tratamento/join.py --audit-only
 ```
@@ -32,8 +33,12 @@ CSV não guarda tipos: ao importar, ler `Id. Acidente` como texto e `ano` como i
 
 `auditoria.json` contém contagens por fonte, colunas ausentes, tipos, nulos,
 duplicados exatos, IDs repetidos/vazios, validação do ano e relações sem acidente.
-Fórmulas/erros Excel, cabeçalhos ambíguos, folhas desconhecidas e valores sem
-cabeçalho interrompem a execução antes de publicar as saídas.
+`verificar_resultados.py` confere os CSV contra a auditoria e grava o resumo
+legível `outputs/fase1/resumo_auditoria.md`, também apenas local.
+Fórmulas e erros Excel são preservados como texto e assinalados por coordenada
+na auditoria, sem avaliar expressões nem substituir valores.
+Cabeçalhos ambíguos, folhas desconhecidas e valores sem cabeçalho interrompem
+a execução antes de publicar as saídas.
 
 As quatro entidades relacionam-se por `(ano, Id. Acidente)`. As tabelas de pessoas
 podem ter várias linhas por acidente. Um join direto entre elas pode criar um
@@ -42,20 +47,12 @@ definir agregações e resolver identificadores sem correspondência. Nesta fase
 esses registos ficam preservados nas tabelas respetivas e assinalados na auditoria.
 O ID de veículo só existe nos anos recentes, impedindo inferir essa relação nos antigos.
 
-### Alinhamento com o relatório da Parte I
+### Âmbito desta fase
 
-O relatório local da equipa analisa Braga e usa contagens de peões por acidente.
-`integrar_peoes.py` segue essa abordagem para todos os anos disponíveis: seleciona
-os acidentes do distrito e conta os peões por `(ano, Id. Acidente)`, acrescentando
-`peoes_envolvidos` e `acidente_com_peoes`. Mantém uma linha por acidente, inclusive
-os acidentes sem peões (contagem zero), e preserva a variável `ano`.
-Valida a unicidade dos acidentes selecionados e da chave
-`(ano, Id. Acidente, Id. Peao)` dos peões associados. Não escolhe arbitrariamente
-entre duplicados. A saída `acidentes_distrito_com_peoes.csv` e os totais em
-`integracao_peoes.json` ficam em `outputs/fase1/`, fora do Git.
-O distrito pode ser alterado com `--district`. As quatro tabelas nacionais
-continuam disponíveis como base. Indicadores de gravidade, curvas, normalização
-de categorias e análises mensais pertencem às fases seguintes.
+O relatório da Parte I serve como referência para a interpretação das tabelas.
+Nesta fase mantém-se a totalidade dos anos e distritos, acrescentando apenas
+`ano` e a proveniência. A escolha de variáveis, filtros geográficos, integração
+de contagens de pessoas e indicadores fica para depois de definido o objetivo.
 
 Não há ficheiros de 2020, 2021 e 2022 no conjunto inicial. Não são criadas linhas
 para preencher anos em falta. Diferenças de categorias, formatos de datas e
