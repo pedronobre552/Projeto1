@@ -11,6 +11,7 @@ ETAPAS = [
     ("Comparar os CSV com os Excel originais", "limpeza_tratamento/verificar_originais.py"),
     ("Atualizar os dicionários", "limpeza_tratamento/gerar_dicionarios.py"),
     ("Obter meteorologia e horas solares", "aquisicao/obter_meteo.py"),
+    ("Obter jogos oficiais do Braga", "aquisicao/obter_jogos_braga.py"),
 ]
 
 
@@ -23,7 +24,7 @@ def main():
         except subprocess.CalledProcessError as erro:
             print(f"\nProcesso interrompido na etapa {numero}: {descricao}.", file=sys.stderr)
             return erro.returncode
-    print("\nConcluído: dados unidos, verificados, documentados e meteorologia obtida.", flush=True)
+    print("\nConcluído: dados unidos, verificados, documentados, meteorologia e jogos obtidos.", flush=True)
     return 0
 
 

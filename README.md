@@ -11,7 +11,8 @@ sem instrução do utilizador.
 | `data/` | Excel anuais originais, preservados |
 | `data_agregada/` | Quatro CSV finais, com todos os anos e `ano` |
 | `meteo/` | Dois CSV: meteorologia horária e horas solares diárias por concelho, 2010–2024 |
-| `aquisicao/` | Script de aquisição no Open-Meteo |
+| `jogos/` | CSV dos jogos oficiais do Braga, 2010–2024 |
+| `aquisicao/` | Scripts de aquisição da meteorologia e dos jogos |
 | `docs/dicionarios/` | Dicionários completos e regras de interpretação |
 | `docs/referencias/` | Formulário BEAV, manual e relatório da Parte I |
 | `outputs/fase1/` | Auditoria detalhada e resumo dos resultados |
@@ -27,6 +28,8 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 - [Como se verifica a correspondência com os originais](docs/integridade.md)
 - [Organização e registo da limpeza](docs/organizacao.md)
 - [Meteorologia: colunas, coordenadas e origem](docs/meteo.md)
+- [Jogos do Braga: aquisição, dicionário e limitações](docs/jogos_braga.md)
+- [Registo do que foi feito e evidência para auditoria](docs/registo_trabalho.md)
 
 ## Como repetir
 
@@ -36,14 +39,14 @@ Na primeira utilização, instalar as dependências:
 python -m pip install -r requirements.txt
 ```
 
-Depois basta um comando para unir, verificar, documentar e obter a meteorologia:
+Depois basta um comando para unir, verificar, documentar e obter meteorologia e jogos:
 
 ```powershell
 python executar.py
 ```
 
 O processo segue a ordem abaixo e para se alguma etapa falhar. Usa o mesmo
-Python em todas as etapas. A meteorologia já descarregada é reutilizada.
+Python em todas as etapas. A meteorologia e as páginas de jogos já descarregadas são reutilizadas.
 Para executar uma etapa isoladamente:
 
 ```powershell
@@ -52,6 +55,7 @@ python limpeza_tratamento/verificar_resultados.py
 python limpeza_tratamento/verificar_originais.py
 python limpeza_tratamento/gerar_dicionarios.py
 python aquisicao/obter_meteo.py
+python aquisicao/obter_jogos_braga.py
 python -m unittest discover -s tests -v
 ```
 

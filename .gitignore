@@ -5,6 +5,7 @@ data_agragada/
 docs/referencias/
 outputs/
 meteo/
+jogos/
 .venv/
 __pycache__/
 *.py[cod]
