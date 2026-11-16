@@ -80,3 +80,40 @@ respostas das APIs e páginas guardadas estão excluídos pelo `.gitignore`.
 Os commits registam as versões do processo. Os hashes nas auditorias permitem
 identificar as versões dos dados locais usadas em cada execução guardada.
 As auditorias são substituídas quando se volta a executar a respetiva aquisição.
+
+## Seleção para análise exploratória — 16-11-2026
+
+- Clarificou-se que o objetivo imediato é selecionar variáveis para a análise
+  exploratória segundo as perguntas de investigação, antes de decidir a formação
+  de perfis. Período: 2010–2019 e 2023–2024.
+- Definiram-se os temas: tipos/número de acidentes; luz, dia/noite e meteorologia;
+  períodos de jogos do Braga e grandes clubes; idade aproximada do veículo,
+  categoria, utilização e condições de carga/lotação.
+- Criou-se uma tabela interativa na conversa com as 171 colunas dos quatro CSV,
+  descrição, cuidados e escolha de categoria. Confirmou-se a correspondência
+  exata dos nomes e ordem com os cabeçalhos locais: 55 + 47 + 33 + 36 colunas.
+- Registaram-se 56 escolhas iniciais do utilizador e 115 variáveis por decidir em
+  [selecao_variaveis.md](selecao_variaveis.md). Este documento é histórico: a
+  distinção inicial entre identificadora/caracterizadora não é a seleção atual
+  da EDA nem uma escolha final para agrupamento.
+- Criou-se a [classificação provisória da EDA](classificacao_provisoria_eda.md)
+  com prioridade, papel, pergunta e justificação para todas as 171 colunas,
+  além de variáveis derivadas e fontes externas necessárias. A proposta ainda
+  não foi confirmada variável a variável; os CSV documentais ficam locais.
+- Confirmou-se que os dados serão filtrados para Braga depois. Falta explicitar
+  distrito/concelho antes de aplicar o filtro; não se restringiram os dados agora.
+- Confirmou-se manter duas medidas de encandeamento: o registo «sol encandeante»
+  em Luminosidade e um indicador estimado de condições potenciais a construir.
+  Hora, dados solares e meteorologia não comprovam encandeamento individual;
+  a orientação de circulação não está estabelecida pelos dados atuais.
+- Próximos passos: fechar o recorte administrativo e o significado de lotação;
+  confirmar clubes e calendários necessários; avaliar cobertura/nulos/categorias;
+  preparar calendário validado, idade aproximada e ligações externas; definir
+  janelas solares e dos jogos e só depois executar a EDA orientada pelas perguntas.
+- Não se calcularam estatísticas da EDA, indicadores solares ou janelas de jogos,
+  nem se transformaram os CSV ou repetiram aquisições e auditorias integrais.
+  A revisão de hoje verifica cobertura documental das 171 colunas, coerência
+  das decisões, referências locais e diff de documentação; não altera código.
+- O utilizador pediu explicitamente o fecho do dia e a atualização no GitHub.
+  A publicação inclui apenas documentação; dados e fontes locais permanecem
+  excluídos pelo .gitignore.

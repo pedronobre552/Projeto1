@@ -1,8 +1,22 @@
 # Projeto de acidentes rodoviários
 
-Base nacional por ano, ainda sem seleção das variáveis finais. Os dados ficam
-locais; apenas código, testes e documentação são versionados. Não fazer push
-sem instrução do utilizador.
+Base nacional por ano, com classificação provisória das variáveis para a análise
+exploratória. O recorte de análise será Braga, aplicado numa etapa posterior;
+os CSV agregados nacionais continuam preservados. Os dados ficam locais; apenas
+código, testes e documentação são versionados. Não fazer push sem instrução do
+utilizador.
+
+## Foco atual — análise exploratória
+
+Analisar número e tipos de acidentes em 2010–2019 e 2023–2024, relacionando-os
+com luz/meteorologia, períodos de jogos e características dos veículos
+(idade aproximada, categoria e carga/lotação). A classificação para esta fase
+não decide quais as variáveis que formarão os perfis futuros.
+
+No estudo do encandeamento, manter duas medidas separadas: `Luminosidade`
+com «sol encandeante» registado e um indicador, ainda por construir, de condições
+potenciais estimadas a partir de dados solares e meteorológicos. A estimativa
+não confirma que o condutor tenha sido encandeado.
 
 ## Onde está cada coisa
 
@@ -23,6 +37,8 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 
 ## Documentação
 
+- [Classificação provisória das 171 variáveis para a EDA e perguntas de investigação](docs/classificacao_provisoria_eda.md)
+- [Escolhas iniciais para perfis — histórico, não seleção atual da EDA](docs/selecao_variaveis.md)
 - [Dicionários dos quatro CSV](docs/dicionarios/README.md)
 - [Procedimento da união dos anos](docs/fase1.md)
 - [Como se verifica a correspondência com os originais](docs/integridade.md)
@@ -70,9 +86,11 @@ a auditoria, não os CSV; não substitui uma regeneração completa.
 
 ## Regras para continuar
 
-Mantêm-se todos os distritos, anos e campos. A seleção de variáveis depende do
-objetivo futuro. As quatro entidades continuam separadas; juntá-las diretamente
-pode multiplicar registos. Ler IDs como texto e `ano` como inteiro.
+Mantêm-se todos os distritos, anos e campos nos agregados nacionais. O filtro
+posterior para Braga e os indicadores da EDA ainda não foram executados. A seleção
+atual é provisória e está documentada; a seleção para perfis permanece em aberto.
+As quatro entidades continuam separadas; juntá-las diretamente pode multiplicar
+registos. Ler IDs como texto e `ano` como inteiro.
 Uma coluna ausente num ano não equivale a zero. Faltam os ficheiros de 2020–2022.
 
 Antes de um commit, rever `git status --short` e `git diff --cached --stat`.
