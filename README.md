@@ -13,9 +13,9 @@ vai de 2010 a 2019, 2023 serve para validação temporal e 2024 fica reservado p
 o teste final. O ficheiro de acidentes não cobre 2020–2022.
 
 O [notebook de análise exploratória](analise/eda_acidentes_diarios.ipynb) constrói
-as três contagens, analisa calendário, histórico, meteorologia e luz natural,
-e verifica regressões de Poisson como referência para a futura comparação com
-uma rede neuronal. A meteorologia ERA5 do próprio dia permite uma avaliação
+as três contagens e apresenta distribuições, padrões temporais, meteorologia
+e luz natural. A fase de modelação vai comparar SARIMA e redes neuronais por
+tipo de acidente. A meteorologia ERA5 do próprio dia permite uma avaliação
 retrospetiva. Uma previsão operacional precisa de informação meteorológica
 disponível antes do dia-alvo.
 
