@@ -26,7 +26,7 @@ python aquisicao/obter_meteo_diaria.py
 - `outputs/meteo_diaria/origem_continente.json` regista os lotes, URLs, modelo e data de aquisição.
 
 O script confere o número de respostas, os dias, os fusos, as unidades e a
-proximidade entre a coordenada de referência e a célula ERA5. O notebook verifica
+proximidade entre a coordenada de referência e a célula ERA5. A preparação verifica
 a unicidade dos pares data–área, a cobertura das áreas presentes nos acidentes,
 a disponibilidade das variáveis e os seus limites físicos.
 
@@ -48,20 +48,20 @@ a disponibilidade das variáveis e os seus limites físicos.
 
 ## Integração nas contagens de Portugal continental
 
-O [notebook](../analise/eda_acidentes_diarios.ipynb) usa os mesmos 18 distritos
+O [notebook de preparação](../analise/preparar_serie_diaria.ipynb) usa os mesmos 18 distritos
 para contar os acidentes e para agregar a meteorologia. Os registos dos Açores
 e da Madeira surgem nos ficheiros de acidentes de 2023–2024 e são filtrados antes
 de construir a série diária. Os pesos meteorológicos são proporções de acidentes
 por distrito em 2010–2014, fixadas antes dos períodos de validação. A comparação
 com pesos iguais mostra a sensibilidade dessa escolha.
 
-Além da precipitação média ponderada, o notebook calcula a percentagem do
+Além da precipitação média ponderada, a preparação calcula a percentagem do
 peso histórico em áreas com pelo menos 1 mm de precipitação no dia. Isto
 mede a extensão da chuva nas áreas representadas e permite testar se a
 informação acrescenta valor à média de precipitação.
 
 As datas de 2020 a 2022 têm meteorologia, mas faltam contagens de acidentes.
-O notebook mantém essas respostas em falta. Nos anos cobertos, o calendário
+O CSV diário em `analise/dados/` mantém essas respostas em falta. Nos anos cobertos, o calendário
 inclui os dias observados com zero ocorrências de um tipo.
 
 O ERA5 descreve condições reconstruídas do próprio dia. Os resultados com

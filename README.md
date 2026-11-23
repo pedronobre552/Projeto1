@@ -12,9 +12,10 @@ continentais e aplica-se aos acidentes antes da agregação. A unidade de análi
 vai de 2010 a 2019, 2023 serve para validação temporal e 2024 fica reservado para
 o teste final. O ficheiro de acidentes não cobre 2020–2022.
 
-O [notebook de análise exploratória](analise/eda_acidentes_diarios.ipynb) constrói
-as três contagens e apresenta distribuições, padrões temporais, meteorologia
-e luz natural. A fase de modelação vai comparar SARIMA e redes neuronais por
+O [notebook de preparação](analise/preparar_serie_diaria.ipynb) constrói a base
+diária usada pelo [notebook de análise exploratória](analise/eda_acidentes_diarios.ipynb).
+Os ficheiros e o fluxo de trabalho estão descritos no [guia da pasta de análise](analise/README.md).
+A fase de modelação vai comparar SARIMA e redes neuronais por
 tipo de acidente. A meteorologia ERA5 do próprio dia permite uma avaliação
 retrospetiva. Uma previsão operacional precisa de informação meteorológica
 disponível antes do dia-alvo.
@@ -28,7 +29,7 @@ disponível antes do dia-alvo.
 | `meteo/` | Meteorologia diária dos 18 distritos continentais e, para Braga, meteorologia horária e horas solares por concelho |
 | `jogos/` | CSV dos jogos oficiais do Braga, 2010–2024 |
 | `aquisicao/` | Scripts de aquisição da meteorologia e dos jogos |
-| `analise/` | Notebook da análise exploratória diária e dependências do kernel |
+| `analise/` | Preparação da série diária, dados para modelação, análise exploratória e resultados locais |
 | `docs/dicionarios/` | Dicionários completos e regras de interpretação |
 | `docs/referencias/` | Formulário BEAV, manual e relatório da Parte I |
 | `outputs/fase1/` | Auditoria detalhada e resumo dos resultados |
@@ -89,11 +90,12 @@ e regista hashes SHA-256 e evidência em `outputs/fase1/comparacao_originais.*`.
 Usar `--help` para configurar caminhos. `join.py --audit-only` atualiza apenas
 a auditoria, não os CSV; não substitui uma regeneração completa.
 
-Para executar apenas a análise a partir dos CSV já preparados, instalar as
-dependências do notebook e abrir a análise no Jupyter.
+Para criar a série diária usada pela análise, instalar as dependências,
+executar primeiro o notebook de preparação e depois abrir a EDA.
 
 ```powershell
 python -m pip install -r analise/requirements.txt
+python -m notebook analise/preparar_serie_diaria.ipynb
 python -m notebook analise/eda_acidentes_diarios.ipynb
 ```
 
