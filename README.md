@@ -5,8 +5,10 @@ versiona o código, os testes, a documentação e o notebook sem resultados guar
 
 ## Foco atual — previsão diária por tipo de acidente
 
-O objetivo é prever as contagens diárias nacionais de despistes, colisões e
-atropelamentos. A unidade de análise é o dia civil. O período de desenvolvimento
+O objetivo é prever as contagens diárias de despistes, colisões e
+atropelamentos em Portugal continental. O filtro inclui os 18 distritos
+continentais e aplica-se aos acidentes antes da agregação. A unidade de análise
+é o dia civil. O período de desenvolvimento
 vai de 2010 a 2019, 2023 serve para validação temporal e 2024 fica reservado para
 o teste final. O ficheiro de acidentes não cobre 2020–2022.
 
@@ -23,7 +25,7 @@ disponível antes do dia-alvo.
 | --- | --- |
 | `data/` | Excel anuais originais, preservados |
 | `data_agregada/` | Quatro CSV finais, com todos os anos e `ano` |
-| `meteo/` | Meteorologia diária por distrito e ilha e, para Braga, meteorologia horária e horas solares por concelho |
+| `meteo/` | Meteorologia diária dos 18 distritos continentais e, para Braga, meteorologia horária e horas solares por concelho |
 | `jogos/` | CSV dos jogos oficiais do Braga, 2010–2024 |
 | `aquisicao/` | Scripts de aquisição da meteorologia e dos jogos |
 | `analise/` | Notebook da análise exploratória diária e dependências do kernel |
@@ -37,7 +39,7 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 
 ## Documentação
 
-- [Meteorologia diária nacional e integração na análise](docs/meteo_diaria.md)
+- [Meteorologia diária de Portugal continental e integração na análise](docs/meteo_diaria.md)
 - [Classificação provisória das 171 variáveis para o estudo inicial de Braga](docs/classificacao_provisoria_eda.md)
 - [Escolhas iniciais para perfis — histórico, não seleção atual da EDA](docs/selecao_variaveis.md)
 - [Dicionários dos quatro CSV](docs/dicionarios/README.md)

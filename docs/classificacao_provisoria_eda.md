@@ -1,7 +1,7 @@
 # Classificação provisória para a análise exploratória
 
 > Documento histórico do estudo de Braga. A análise em curso usa as contagens
-> diárias nacionais por tipo. Consultar o [notebook](../analise/eda_acidentes_diarios.ipynb)
+> diárias por tipo em Portugal continental. Consultar o [notebook](../analise/eda_acidentes_diarios.ipynb)
 > e a [documentação da meteorologia diária](meteo_diaria.md).
 
 Proposta de 2026-11-16, orientada pelas perguntas de investigação do estudo inicial. A seleção anterior para perfis permanece em `selecao_variaveis.md`. Esta proposta documenta a preparação da análise inicial de Braga.

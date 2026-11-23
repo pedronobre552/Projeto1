@@ -1,6 +1,6 @@
 # Meteorologia e horas solares de Braga
 
-Para a previsão nacional por dia, consultar a [meteorologia diária nacional](meteo_diaria.md).
+Para a previsão diária em Portugal continental, consultar a [meteorologia diária dos 18 distritos](meteo_diaria.md).
 
 São dois ficheiros na pasta `meteo`, para os 14 concelhos do distrito,
 de **2010-01-01 a 2024-12-31**:

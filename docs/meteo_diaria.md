@@ -1,17 +1,16 @@
-# Meteorologia diária para a previsão nacional de acidentes
+# Meteorologia diária para a previsão de acidentes em Portugal continental
 
 O script [obter_meteo_diaria.py](../aquisicao/obter_meteo_diaria.py) obtém
 meteorologia de **2010-01-01 a 2024-12-31** usando a
 [Historical Weather API da Open-Meteo](https://open-meteo.com/en/docs/historical-weather-api)
 com um modelo fixo, **ERA5**. A granularidade solicitada à API é diária. O CSV
-tem uma linha por data e área e 29 pontos de referência: as capitais dos 18
-distritos continentais, as nove ilhas dos Açores e as duas ilhas habitadas da
-Madeira. Os pontos vêm do [catálogo do IPMA](https://api.ipma.pt/open-data/distrits-islands.json).
+tem uma linha por data e distrito e usa a capital de cada um dos 18 distritos
+continentais como ponto de referência. Os pontos vêm do
+[catálogo do IPMA](https://api.ipma.pt/open-data/distrits-islands.json).
 
-O fuso pedido à API segue cada área, com `Europe/Lisbon`, `Atlantic/Madeira`
-ou `Atlantic/Azores`. A grelha ERA5 tem 0,25° de resolução. A célula terrestre
+O fuso pedido à API é `Europe/Lisbon`. A grelha ERA5 tem 0,25° de resolução. A célula terrestre
 escolhida pela API representa a vizinhança do ponto. A série corresponde a
-uma aproximação da meteorologia do distrito ou ilha. A aproximação pode ser
+uma aproximação da meteorologia do distrito. A aproximação pode ser
 menos representativa em áreas extensas, costeiras ou montanhosas.
 
 ## Ficheiros e verificação
@@ -22,9 +21,9 @@ Executar a partir da raiz do projeto.
 python aquisicao/obter_meteo_diaria.py
 ```
 
-- `meteo/meteorologia_diaria_portugal.csv` contém os 158.891 pares data–área esperados.
+- `meteo/meteorologia_diaria_portugal_continental.csv` contém os 98.622 pares data–distrito esperados.
 - `outputs/meteo_diaria/respostas/` guarda os JSON usados para reexecutar as consultas localmente.
-- `outputs/meteo_diaria/origem.json` regista os lotes, URLs, modelo e data de aquisição.
+- `outputs/meteo_diaria/origem_continente.json` regista os lotes, URLs, modelo e data de aquisição.
 
 O script confere o número de respostas, os dias, os fusos, as unidades e a
 proximidade entre a coordenada de referência e a célula ERA5. O notebook verifica
@@ -47,12 +46,13 @@ a disponibilidade das variáveis e os seus limites físicos.
 | `horas_sol_s` | Duração de sol direto estimada, em segundos |
 | `radiacao_total_mj_m2` | Radiação de onda curta acumulada, MJ/m² |
 
-## Integração nas contagens nacionais
+## Integração nas contagens de Portugal continental
 
-O [notebook](../analise/eda_acidentes_diarios.ipynb) calcula médias nacionais
-ponderadas. Os pesos são proporções de acidentes por área em 2010–2014, fixadas
-antes dos períodos de validação. O Corvo está coberto pela meteorologia e tem
-peso zero por ausência de registos de acidentes nesse período. A comparação
+O [notebook](../analise/eda_acidentes_diarios.ipynb) usa os mesmos 18 distritos
+para contar os acidentes e para agregar a meteorologia. Os registos dos Açores
+e da Madeira surgem nos ficheiros de acidentes de 2023–2024 e são filtrados antes
+de construir a série diária. Os pesos meteorológicos são proporções de acidentes
+por distrito em 2010–2014, fixadas antes dos períodos de validação. A comparação
 com pesos iguais mostra a sensibilidade dessa escolha.
 
 Além da precipitação média ponderada, o notebook calcula a percentagem do

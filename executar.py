@@ -10,7 +10,7 @@ ETAPAS = [
     ("Verificar a estrutura dos CSV", "limpeza_tratamento/verificar_resultados.py"),
     ("Comparar os CSV com os Excel originais", "limpeza_tratamento/verificar_originais.py"),
     ("Atualizar os dicionários", "limpeza_tratamento/gerar_dicionarios.py"),
-    ("Obter meteorologia diária nacional", "aquisicao/obter_meteo_diaria.py"),
+    ("Obter meteorologia diária de Portugal continental", "aquisicao/obter_meteo_diaria.py"),
     ("Obter meteorologia e horas solares", "aquisicao/obter_meteo.py"),
     ("Obter jogos oficiais do Braga", "aquisicao/obter_jogos_braga.py"),
 ]
