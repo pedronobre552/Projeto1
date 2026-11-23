@@ -1,6 +1,10 @@
 # Classificação provisória para a análise exploratória
 
-Proposta do assistente de 2026-11-16, orientada pelas perguntas de investigação. Não representa decisões individuais já confirmadas pelo utilizador. A seleção anterior para perfis permanece em `selecao_variaveis.md`; esta proposta orienta a EDA atual. Nenhum CSV de dados foi transformado.
+> Documento histórico do estudo de Braga. A análise em curso usa as contagens
+> diárias nacionais por tipo. Consultar o [notebook](../analise/eda_acidentes_diarios.ipynb)
+> e a [documentação da meteorologia diária](meteo_diaria.md).
+
+Proposta de 2026-11-16, orientada pelas perguntas de investigação do estudo inicial. A seleção anterior para perfis permanece em `selecao_variaveis.md`. Esta proposta documenta a preparação da análise inicial de Braga.
 
 ### Decisões de âmbito confirmadas na conversa
 

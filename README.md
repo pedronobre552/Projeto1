@@ -1,22 +1,21 @@
 # Projeto de acidentes rodoviários
 
-Base nacional por ano, com classificação provisória das variáveis para a análise
-exploratória. O recorte de análise será Braga, aplicado numa etapa posterior;
-os CSV agregados nacionais continuam preservados. Os dados ficam locais; apenas
-código, testes e documentação são versionados. Não fazer push sem instrução do
-utilizador.
+Base nacional de acidentes rodoviários. Os dados ficam locais e o repositório
+versiona o código, os testes, a documentação e o notebook sem resultados guardados.
 
-## Foco atual — análise exploratória
+## Foco atual — previsão diária por tipo de acidente
 
-Analisar número e tipos de acidentes em 2010–2019 e 2023–2024, relacionando-os
-com luz/meteorologia, períodos de jogos e características dos veículos
-(idade aproximada, categoria e carga/lotação). A classificação para esta fase
-não decide quais as variáveis que formarão os perfis futuros.
+O objetivo é prever as contagens diárias nacionais de despistes, colisões e
+atropelamentos. A unidade de análise é o dia civil. O período de desenvolvimento
+vai de 2010 a 2019, 2023 serve para validação temporal e 2024 fica reservado para
+o teste final. O ficheiro de acidentes não cobre 2020–2022.
 
-No estudo do encandeamento, manter duas medidas separadas: `Luminosidade`
-com «sol encandeante» registado e um indicador, ainda por construir, de condições
-potenciais estimadas a partir de dados solares e meteorológicos. A estimativa
-não confirma que o condutor tenha sido encandeado.
+O [notebook de análise exploratória](analise/eda_acidentes_diarios.ipynb) constrói
+as três contagens, analisa calendário, histórico, meteorologia e luz natural,
+e verifica regressões de Poisson como referência para a futura comparação com
+uma rede neuronal. A meteorologia ERA5 do próprio dia permite uma avaliação
+retrospetiva. Uma previsão operacional precisa de informação meteorológica
+disponível antes do dia-alvo.
 
 ## Onde está cada coisa
 
@@ -24,9 +23,10 @@ não confirma que o condutor tenha sido encandeado.
 | --- | --- |
 | `data/` | Excel anuais originais, preservados |
 | `data_agregada/` | Quatro CSV finais, com todos os anos e `ano` |
-| `meteo/` | Dois CSV: meteorologia horária e horas solares diárias por concelho, 2010–2024 |
+| `meteo/` | Meteorologia diária por distrito e ilha e, para Braga, meteorologia horária e horas solares por concelho |
 | `jogos/` | CSV dos jogos oficiais do Braga, 2010–2024 |
 | `aquisicao/` | Scripts de aquisição da meteorologia e dos jogos |
+| `analise/` | Notebook da análise exploratória diária e dependências do kernel |
 | `docs/dicionarios/` | Dicionários completos e regras de interpretação |
 | `docs/referencias/` | Formulário BEAV, manual e relatório da Parte I |
 | `outputs/fase1/` | Auditoria detalhada e resumo dos resultados |
@@ -37,7 +37,8 @@ Dados, PDF, relatórios e ambiente virtual estão excluídos do Git.
 
 ## Documentação
 
-- [Classificação provisória das 171 variáveis para a EDA e perguntas de investigação](docs/classificacao_provisoria_eda.md)
+- [Meteorologia diária nacional e integração na análise](docs/meteo_diaria.md)
+- [Classificação provisória das 171 variáveis para o estudo inicial de Braga](docs/classificacao_provisoria_eda.md)
 - [Escolhas iniciais para perfis — histórico, não seleção atual da EDA](docs/selecao_variaveis.md)
 - [Dicionários dos quatro CSV](docs/dicionarios/README.md)
 - [Procedimento da união dos anos](docs/fase1.md)
@@ -55,7 +56,8 @@ Na primeira utilização, instalar as dependências:
 python -m pip install -r requirements.txt
 ```
 
-Depois basta um comando para unir, verificar, documentar e obter meteorologia e jogos:
+Um comando permite unir e verificar os ficheiros, atualizar os dicionários e obter
+meteorologia e jogos.
 
 ```powershell
 python executar.py
@@ -70,6 +72,7 @@ python limpeza_tratamento/join.py
 python limpeza_tratamento/verificar_resultados.py
 python limpeza_tratamento/verificar_originais.py
 python limpeza_tratamento/gerar_dicionarios.py
+python aquisicao/obter_meteo_diaria.py
 python aquisicao/obter_meteo.py
 python aquisicao/obter_jogos_braga.py
 python -m unittest discover -s tests -v
@@ -84,14 +87,21 @@ e regista hashes SHA-256 e evidência em `outputs/fase1/comparacao_originais.*`.
 Usar `--help` para configurar caminhos. `join.py --audit-only` atualiza apenas
 a auditoria, não os CSV; não substitui uma regeneração completa.
 
+Para executar apenas a análise a partir dos CSV já preparados, instalar as
+dependências do notebook e abrir a análise no Jupyter.
+
+```powershell
+python -m pip install -r analise/requirements.txt
+python -m notebook analise/eda_acidentes_diarios.ipynb
+```
+
 ## Regras para continuar
 
-Mantêm-se todos os distritos, anos e campos nos agregados nacionais. O filtro
-posterior para Braga e os indicadores da EDA ainda não foram executados. A seleção
-atual é provisória e está documentada; a seleção para perfis permanece em aberto.
-As quatro entidades continuam separadas; juntá-las diretamente pode multiplicar
-registos. Ler IDs como texto e `ano` como inteiro.
+Os agregados preservam os distritos, os anos e os campos de origem. As quatro
+entidades continuam separadas. Juntá-las diretamente pode multiplicar registos.
+Ler IDs como texto e `ano` como inteiro.
 Uma coluna ausente num ano não equivale a zero. Faltam os ficheiros de 2020–2022.
 
 Antes de um commit, rever `git status --short` e `git diff --cached --stat`.
-Adicionar apenas caminhos explícitos de código/documentação e manter os commits locais.
+Adicionar apenas caminhos explícitos de código e documentação. Publicar no
+GitHub após verificação e com instrução do utilizador.
